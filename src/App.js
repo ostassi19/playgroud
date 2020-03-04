@@ -1,117 +1,141 @@
-import React, { Component } from 'react'
+import React, { Component } from "react"
 import './App.css'
-import Person from './Person/Person.js'
+import Person from './Person/Person'
 
-
-// const app = () => {
-//   return (
-//     <div className="App">
-//       <h1>Hello React!!</h1>
-//     </div>
-//   )
-// }
-// compoment ya ikoun class based component wala functiinal base component 
 class App extends Component {
-  state={// nsajlou feha variable wa react listen lel chagement 
-    persons : [
-      {id:"zzz", name: "amani", age: "21"},
-      {id:"aaa", name: "houssem", age: "20"},
-      {id:"eee",name: "youssef", age: "16"},
-      {id:"xxx",name: "houssem", age: "20"},
-      {id:"www",name: "youssef", age: "16"}
+
+  state = {
+    persons: [
+      { id: "asd", name: "Amani", age: 21, list: "A" },
+      { id: "sdf", name: "houssem", age: 20, list: "A" },
+      { id: "frz", name: "youssef", age: 16, list: "A" },
+      { id: "kul", name: "ala", age: 23, list: "A" }
     ],
-    showPerson : true
+    showPersons: true,
+    titleColor: "black"
   }
 
-  
+  switchNameHandler = () => {
+    console.log("Button was clicked !!")
 
+    // this.state.persons[1].name = "Mohmaed"
 
-// ... : spred opperator
-  switchNameHandler= () =>{
-    //console.log("was clicked")
-
-    const newPersons =[...this.state.persons]
-    newPersons[0].name="Salim"
-    // pour modifier state on fait un copie surlaquel on effectue les modifications necessaire
-
-    this.setState({// bech na3mlou chagement au niveau des références 
-      // persons:[
-      //   {name: "mouna", age: "21"},
-      // {name: "mounira", age: "22"},
-      // {name: "monya", age: "23"}
-      // ]
-
-      persons: newPersons
-    })
-  }
-
-  switchChageHandler=(event,id) =>{
-
-    console.log("change name handler")
-    const newPersons =[...this.state.persons]
-    const index = newPersons.findIndex((person)=>{
-      return person.id===id
-    })
-    newPersons[index].name= event.target.value
+    const newPersons = [...this.state.persons]
+    newPersons[0].name = "Ahmed"
 
     this.setState({
-     
       persons: newPersons
     })
-
   }
 
+  changeNameHandler = (event, person) => {
+    // console.log(event)
 
-  switchDeletePersonHandler=(person)=>{
-    console.log("delete Person")
-    const newPersons =[...this.state.persons]
+    const newPersons = [...this.state.persons]
     const index = newPersons.indexOf(person)
-    newPersons.splice(index,1)
+    newPersons[index].name = event.target.value
 
     this.setState({
       persons: newPersons
     })
   }
 
-  showPersonsHandler=() =>{
+  showPersonsHandler = () => {
     this.setState({
-      showPerson: ! this.state.showPerson
+      showPersons: !this.state.showPersons
     })
   }
 
+  deletePersonHandler = (person) => {
+    const newPersons = [...this.state.persons]
+    const index = newPersons.indexOf(person)
+    newPersons.splice(index, 1)
+
+    this.setState({
+      persons: newPersons
+    })
+  }
+
+  generatePersonsList = (personsArray, targetList) => {
+
+    const selectedPersons = personsArray.filter((person) => {
+      return person.list === targetList
+    })
+
+    const personsList = selectedPersons.map((person) => {
+      return (
+        <Person
+          name={person.name}
+          age={person.age}
+          changed={(event) => { return this.changeNameHandler(event, person) }}
+          deleted={() => { this.deletePersonHandler(person) }}
+          moved={() => { this.movePersonHandler(person) }}
+          key={person.id} />
+      )
+    })
+
+    return personsList
+  }
+
+  movePersonHandler = (person) => {
+    const newPersons = [...this.state.persons]
+    const index = newPersons.indexOf(person)
+
+    if (newPersons[index].list === "A")
+      newPersons[index].list = "B"
+    else
+      newPersons[index].list = "A"
+
+    this.setState({
+      persons: newPersons
+    })
+  }
+
+  changeColorHandler = () => {
+
+    let newColor = "black"
+
+    if (this.state.titleColor === "black")
+      newColor = "red"
+
+    this.setState({
+      titleColor: newColor
+    })
+  }
 
   render() {
 
-    let personComponents=null
-    
-    if(this.state.showPerson)
-      personComponents=(
-        
-        <div>
-          {this.state.persons.map((person,index)=>{
-            return(
-              <Person name= {person.name} 
-              age={person.age} 
-              changed={(event)=> {this.switchChageHandler(event,person.id)}}
-              deleted={()=>{this.switchDeletePersonHandler(person)}}
-              key={index} />
-            )
-          })}
-        </div>
-      )
+    let personsListA = null
+    let personsListB = null
 
+    if (this.state.showPersons) {
+      personsListA = this.generatePersonsList(this.state.persons, "A")
+      personsListB = this.generatePersonsList(this.state.persons, "B")
+    }
 
     return (
       <div className="App">
-        <h1>Hello React!!</h1>
-        <button onClick={this.switchNameHandler}>Switch name</button>
-        <button onClick={this.showPersonsHandler}>taggle persons</button>
-        
-        
-        {personComponents}
+        <h1 style={{ color: this.state.titleColor }}>Hello React World !!</h1>
+
+        <button onClick={this.switchNameHandler}>Switch Name</button>
+        <button onClick={this.showPersonsHandler}>Toggle Persons</button>
+        <button onClick={this.changeColorHandler}>Change Title Color</button>
+
+        <div style={{ display: 'flex' }}>
+          <div style={{ width: '50%' }}>
+            <h2>Liste A</h2>
+            {personsListA}
+          </div>
+
+          <div style={{ width: '50%' }}>
+            <h2>Liste B</h2>
+            {personsListB}
+          </div>
+        </div>
+
       </div>
     )
   }
 }
 
-export default App 
+export default App

@@ -1,15 +1,15 @@
 import React from 'react'
-import classes from'./Person.module.css'
+import './Person.module.css'
 
 const person = (props) => {
   return (
-    <div className={classes.Person}>
-      <h1 onClick= {props.deleted}>I'm {props.name}, my age {props.age}</h1>
-      <p>{props.children}</p>
-      <input type="text" onChange={props.changed}/>
-      
+    <div className="Person">
+      <p onClick={props.moved}>I am {props.name} and I am {props.age} years old</p>
+      <input onChange={props.changed} />
+      <button onClick={props.deleted}>x</button>
     </div>
   )
 }
+
 
 export default person
